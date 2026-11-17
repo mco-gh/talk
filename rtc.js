@@ -3,7 +3,11 @@
 // captions). PeerJS's public broker introduces the two browsers to each other;
 // after that everything flows directly between them.
 /* global Peer */
+import { iceServers } from './ice.js';
+
 const PREFIX = 'talk-call-';
+// How long to try before telling both people the call can't be connected.
+const CONNECT_TIMEOUT = 20000;
 const ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';   // no look-alikes
 
 export function newRoomCode() {
@@ -15,21 +19,23 @@ export function newRoomCode() {
 /**
  * Open (as host) or join a two-person call.
  * handlers: onWaiting(), onOpen(), onStream(stream), onMessage(obj), onEnded(reason)
- * Reasons: 'left' | 'lost' | 'full' | 'noroom' | 'taken' | 'network' | 'browser'
+ * Reasons: 'left' | 'lost' | 'full' | 'noroom' | 'taken' | 'network' | 'browser' | 'unreachable'
  */
 export function openLink({ code, host, stream, handlers }) {
   const roomId = PREFIX + code;
-  const peer = host ? new Peer(roomId) : new Peer();
+  let peer = null;          // created once we know the ICE servers
   let conn = null;
   let call = null;
   let audioSender = null;
   let wantedTrack = null;
   let closed = false;
+  let timer = null;
 
   const end = (reason) => {
     if (closed) return;
     closed = true;
-    try { peer.destroy(); } catch {}
+    clearTimeout(timer);
+    try { peer?.destroy(); } catch {}
     handlers.onEnded?.(reason);
   };
 
@@ -38,9 +44,16 @@ export function openLink({ code, host, stream, handlers }) {
     if (audioSender && wantedTrack) audioSender.replaceTrack(wantedTrack).catch(() => {});
   };
 
+  // Once the two browsers have found each other, give the link a fixed time to form.
+  const startTimer = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { if (!conn?.open) end('unreachable'); }, CONNECT_TIMEOUT);
+  };
+
   const wireConn = (c) => {
     conn = c;
-    c.on('open', () => handlers.onOpen?.());
+    startTimer();
+    c.on('open', () => { clearTimeout(timer); handlers.onOpen?.(); });
     c.on('data', (data) => {
       if (data?.t === 'full') return end('full');
       if (data?.t === 'bye') return end('left');
@@ -61,44 +74,50 @@ export function openLink({ code, host, stream, handlers }) {
     });
   };
 
-  peer.on('open', () => {
-    if (host) return handlers.onWaiting?.();
-    wireConn(peer.connect(roomId, { reliable: true }));
-    wireCall(peer.call(roomId, stream));
-  });
+  iceServers().then((servers) => {
+    if (closed) return;
+    const options = { config: { iceServers: servers } };
+    peer = host ? new Peer(roomId, options) : new Peer(options);
 
-  peer.on('connection', (c) => {
-    if (!host) return c.close();
-    if (conn) {
-      // A call is for two. Tell the newcomer, then let them go.
-      c.on('open', () => { c.send({ t: 'full' }); setTimeout(() => c.close(), 500); });
-      return;
-    }
-    wireConn(c);
-  });
+    peer.on('open', () => {
+      if (host) return handlers.onWaiting?.();
+      wireConn(peer.connect(roomId, { reliable: true }));
+      wireCall(peer.call(roomId, stream));
+    });
 
-  peer.on('call', (m) => {
-    if (!host || call || (conn && m.peer !== conn.peer)) return m.close();
-    m.answer(stream);
-    wireCall(m);
-  });
+    peer.on('connection', (c) => {
+      if (!host) return c.close();
+      if (conn) {
+        // A call is for two. Tell the newcomer, then let them go.
+        c.on('open', () => { c.send({ t: 'full' }); setTimeout(() => c.close(), 500); });
+        return;
+      }
+      wireConn(c);
+    });
 
-  // Losing the broker doesn't affect a call in progress; quietly reconnect so
-  // a waiting host stays reachable.
-  peer.on('disconnected', () => { if (!closed && !peer.destroyed) peer.reconnect(); });
+    peer.on('call', (m) => {
+      if (!host || call || (conn && m.peer !== conn.peer)) return m.close();
+      m.answer(stream);
+      wireCall(m);
+    });
 
-  peer.on('error', (err) => {
-    const reason = {
-      'peer-unavailable': 'noroom',
-      'unavailable-id': 'taken',
-      'browser-incompatible': 'browser',
-      'network': 'network',
-      'server-error': 'network',
-      'socket-error': 'network',
-      'socket-closed': 'network',
-    }[err.type];
-    // Once the two browsers are talking, broker trouble is not our problem.
-    if (reason && !(call?.open && reason === 'network')) end(reason);
+    // Losing the broker doesn't affect a call in progress; quietly reconnect so
+    // a waiting host stays reachable.
+    peer.on('disconnected', () => { if (!closed && !peer.destroyed) peer.reconnect(); });
+
+    peer.on('error', (err) => {
+      const reason = {
+        'peer-unavailable': 'noroom',
+        'unavailable-id': 'taken',
+        'browser-incompatible': 'browser',
+        'network': 'network',
+        'server-error': 'network',
+        'socket-error': 'network',
+        'socket-closed': 'network',
+      }[err.type];
+      // Once the two browsers are talking, broker trouble is not our problem.
+      if (reason && !(call?.open && reason === 'network')) end(reason);
+    });
   });
 
   return {
@@ -110,7 +129,8 @@ export function openLink({ code, host, stream, handlers }) {
       try { if (conn?.open) conn.send({ t: 'bye' }); } catch {}
       closed = true;
       // Give the goodbye a moment to leave before tearing down.
-      setTimeout(() => { try { peer.destroy(); } catch {} }, 150);
+      clearTimeout(timer);
+      setTimeout(() => { try { peer?.destroy(); } catch {} }, 150);
     },
   };
 }

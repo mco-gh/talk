@@ -58,6 +58,7 @@ export default {
     'err.noroom': 'Nobody is in this call yet. Ask your friend to start it, then try again.',
     'err.taken': 'That call link is already in use. Start a new call.',
     'err.network': 'Couldn’t reach the connection service. Check your internet and try again.',
+    'err.unreachable': 'Couldn’t connect to your friend. Try again, or try a different network or browser.',
     'err.browser': 'This browser can’t make video calls. Try a current Chrome, Edge, Safari or Firefox.',
     'err.translate': 'Translation stopped: {reason}',
     'err.badkey': 'Google didn’t accept that API key',

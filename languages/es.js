@@ -56,6 +56,7 @@ export default {
     'err.noroom': 'Todavía no hay nadie en esta llamada. Pide a la otra persona que la inicie y vuelve a intentarlo.',
     'err.taken': 'Este enlace de llamada ya está en uso. Inicia una llamada nueva.',
     'err.network': 'No se pudo contactar con el servicio de conexión. Comprueba tu conexión a internet y vuelve a intentarlo.',
+    'err.unreachable': 'No se pudo conectar con la otra persona. Vuelve a intentarlo o prueba con otra red u otro navegador.',
     'err.browser': 'Este navegador no puede hacer videollamadas. Prueba con una versión reciente de Chrome, Edge, Safari o Firefox.',
     'err.translate': 'La traducción se ha detenido: {reason}',
     'err.badkey': 'Google no ha aceptado esa clave de API',

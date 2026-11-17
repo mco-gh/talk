@@ -56,6 +56,7 @@ export default {
     'err.noroom': 'Personne n’est encore dans cet appel. Demandez à votre ami de le démarrer, puis réessayez.',
     'err.taken': 'Ce lien d’appel est déjà utilisé. Démarrez un nouvel appel.',
     'err.network': 'Impossible de joindre le service de connexion. Vérifiez votre connexion internet et réessayez.',
+    'err.unreachable': 'Impossible de se connecter à votre ami. Réessayez, ou essayez un autre réseau ou un autre navigateur.',
     'err.browser': 'Ce navigateur ne permet pas les appels vidéo. Essayez une version récente de Chrome, Edge, Safari ou Firefox.',
     'err.translate': 'La traduction s’est arrêtée : {reason}',
     'err.badkey': 'Google n’a pas accepté cette clé API',

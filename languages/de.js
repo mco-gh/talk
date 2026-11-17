@@ -56,6 +56,7 @@ export default {
     'err.noroom': 'In diesem Anruf ist noch niemand. Bitte dein Gegenüber, ihn zu starten, und versuch es dann noch einmal.',
     'err.taken': 'Dieser Anruflink wird schon verwendet. Starte einen neuen Anruf.',
     'err.network': 'Der Verbindungsdienst ist nicht erreichbar. Prüf deine Internetverbindung und versuch es noch einmal.',
+    'err.unreachable': 'Keine Verbindung zu deinem Gegenüber möglich. Versuch es noch einmal oder probier ein anderes Netzwerk oder einen anderen Browser.',
     'err.browser': 'Dieser Browser unterstützt keine Videoanrufe. Probier eine aktuelle Version von Chrome, Edge, Safari oder Firefox.',
     'err.translate': 'Die Übersetzung wurde beendet: {reason}',
     'err.badkey': 'Google hat diesen API-Schlüssel nicht akzeptiert',

@@ -356,6 +356,7 @@ function endCall(reason) {
   const message = {
     left: t('ended.left'), lost: t('ended.lost'), full: t('ended.full'),
     noroom: t('err.noroom'), taken: t('err.taken'), network: t('err.network'), browser: t('err.browser'),
+    unreachable: t('err.unreachable'),
   }[reason] ?? t('ended.left');
   if (wasInCall || reason === 'full') toast(message); else showError(message);
 }
