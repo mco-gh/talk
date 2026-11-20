@@ -34,6 +34,7 @@ export default {
     'settings.done': 'Terminé',
     'forgot': 'Tout est effacé',
     'credit': 'Fait avec ❤️ par {link}',
+    'nav.apps': 'Toutes les applis',
     'controls': 'Commandes de l’appel',
     'ctl.mic': 'Micro',
     'ctl.cam': 'Caméra',

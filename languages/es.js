@@ -34,6 +34,7 @@ export default {
     'settings.done': 'Listo',
     'forgot': 'Todo borrado',
     'credit': 'Hecho con ❤️ por {link}',
+    'nav.apps': 'Todas las apps',
     'controls': 'Controles de la llamada',
     'ctl.mic': 'Micrófono',
     'ctl.cam': 'Cámara',
