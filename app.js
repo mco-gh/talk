@@ -495,3 +495,19 @@ renderLobby();
 navigator.permissions?.query({ name: 'camera' })
   .then((status) => { if (status.state === 'granted') return getLocalStream(); })
   .catch(() => {});
+
+// ── Appearance: System, Light or Dark, saved in this browser. The choice is written
+// to <meta name="color-scheme">, which the stylesheet follows. ──
+{
+  const schemeMeta = document.querySelector('meta[name="color-scheme"]');
+  for (const input of document.querySelectorAll('input[name="scheme"]')) {
+    input.checked = input.value === schemeMeta.content;
+    input.addEventListener('change', () => {
+      schemeMeta.content = input.value;
+      try {
+        if (input.value === 'light dark') localStorage.removeItem('talk-scheme');
+        else localStorage.setItem('talk-scheme', input.value);
+      } catch { /* the choice still applies for this visit */ }
+    });
+  }
+}

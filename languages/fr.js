@@ -35,6 +35,7 @@ export default {
     'forgot': 'Tout est effacé',
     'credit': 'Fait avec ❤️ par {link}',
     'nav.apps': 'Toutes les applis',
+    'settings.appearance': 'Apparence', 'settings.system': 'Système', 'settings.light': 'Clair', 'settings.dark': 'Sombre',
     'controls': 'Commandes de l’appel',
     'ctl.mic': 'Micro',
     'ctl.cam': 'Caméra',

@@ -6,6 +6,7 @@
   <title>Talk — video calls that translate your voice</title>
   <meta name="description" content="A two-person video call that translates what you say, in a voice that sounds like you. Peer to peer; nothing is stored outside your browser.">
   <meta name="color-scheme" content="light dark">
+  <script>try { const s = localStorage.getItem('talk-scheme'); if (s === 'light' || s === 'dark') document.querySelector('meta[name="color-scheme"]').content = s; } catch {}</script>
   <meta name="theme-color" content="#fff6e9" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1b1530" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
@@ -155,6 +156,11 @@
       <input id="captions-on" type="checkbox">
       <span data-i18n="settings.captions">Show captions</span>
     </label>
+
+    <fieldset class="field scheme-pick">
+      <legend data-i18n="settings.appearance">Appearance</legend>
+      <div class="segmented"><label><input type="radio" name="scheme" value="light dark"><span data-i18n="settings.system">System</span></label><label><input type="radio" name="scheme" value="light"><span data-i18n="settings.light">Light</span></label><label><input type="radio" name="scheme" value="dark"><span data-i18n="settings.dark">Dark</span></label></div>
+    </fieldset>
 
     <div class="forget">
       <button class="btn small ghost danger-text" type="button" id="forget" data-i18n="settings.forget">Forget everything</button>
